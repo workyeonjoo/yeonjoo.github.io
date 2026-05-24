@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio — BX Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --c-bg: #f9f8f6;
+    --c-surface: #ffffff;
+    --c-border: #e8e6e1;
+    --c-text: #1a1916;
+    --c-muted: #8a8880;
+    --c-accent: #1a1916;
+    --c-tag-bg: #f0efe9;
+    --c-tag-text: #5a5854;
+    --c-hover: #f4f3ef;
+    --font-sans: 'DM Sans', sans-serif;
+    --font-serif: 'DM Serif Display', serif;
+    --nav-h: 64px;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: var(--nav-h);
+    background: var(--c-bg);
+    border-bottom: 1px solid var(--c-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+  }
+  .nav-logo {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    letter-spacing: -0.01em;
+    color: var(--c-text);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--c-muted);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--c-text); }
+
+  /* HERO */
+  .hero {
+    padding: 96px 48px 80px;
+    max-width: 960px;
+  }
+  .hero-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(42px, 6vw, 72px);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--c-text);
+    margin-bottom: 24px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--c-muted);
+  }
+  .hero-desc {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--c-muted);
+    max-width: 480px;
+  }
+
+  /* FILTER */
+  .filter-bar {
+    padding: 0 48px 40px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    padding: 7px 16px;
+    border: 1px solid var(--c-border);
+    border-radius: 100px;
+    background: transparent;
+    color: var(--c-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { background: var(--c-hover); color: var(--c-text); }
+  .filter-btn.active { background: var(--c-text); color: var(--c-bg); border-color: var(--c-text); }
+
+  /* PROJECTS GRID */
+  .projects {
+    padding: 0 48px 120px;
+    columns: 2;
+    column-gap: 24px;
+  }
+  .project-card {
+    break-inside: avoid;
+    margin-bottom: 24px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .project-card:hover { border-color: #c8c6c0; }
+  .project-card.hidden { display: none; }
+
+  .project-images {
+    display: grid;
+    gap: 2px;
+    background: var(--c-border);
+  }
+  .project-images.single { grid-template-columns: 1fr; }
+  .project-images.double { grid-template-columns: 1fr 1fr; }
+  .project-images.triple { grid-template-columns: 1fr 1fr; }
+  .project-images.triple .img-wrap:first-child { grid-column: 1 / -1; }
+
+  .img-wrap {
+    background: var(--c-tag-bg);
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    position: relative;
+  }
+  .img-wrap.tall { aspect-ratio: 3/4; }
+  .img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .project-card:hover .img-wrap img { transform: scale(1.02); }
+
+  .img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    color: #c8c6c0;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .img-placeholder:hover { background: #eae9e3; color: var(--c-muted); }
+  .img-placeholder svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
+
+  .project-meta {
+    padding: 20px 22px 22px;
+  }
+  .project-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: var(--c-tag-bg);
+    color: var(--c-tag-text);
+  }
+  .project-title {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .project-client {
+    font-size: 12px;
+    color: var(--c-muted);
+    margin-bottom: 10px;
+  }
+  .project-desc {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--c-muted);
+  }
+
+  .add-image-btn {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    background: transparent;
+    border: 1px dashed var(--c-border);
+    border-radius: 2px;
+    padding: 8px 14px;
+    margin-top: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .add-image-btn:hover { border-color: var(--c-muted); color: var(--c-text); }
+  .add-image-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; }
+
+  /* ADD PROJECT */
+  .add-project-area {
+    padding: 0 48px 48px;
+  }
+  .add-project-btn {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--c-muted);
+    background: transparent;
+    border: 1px dashed var(--c-border);
+    border-radius: 4px;
+    padding: 20px;
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.15s;
+  }
+  .add-project-btn:hover { border-color: var(--c-muted); color: var(--c-text); background: var(--c-hover); }
+  .add-project-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,25,22,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--c-surface);
+    border-radius: 6px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 36px;
+  }
+  .modal-title {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 28px;
+    letter-spacing: -0.01em;
+  }
+  .form-group { margin-bottom: 18px; }
+  .form-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin-bottom: 7px;
+  }
+  .form-input, .form-select, .form-textarea {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--c-border);
+    border-radius: 3px;
+    background: var(--c-bg);
+    color: var(--c-text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--c-text); }
+  .form-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+  .form-select { appearance: none; cursor: pointer; }
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 28px;
+  }
+  .btn-cancel {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    padding: 9px 20px;
+    border: 1px solid var(--c-border);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--c-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-cancel:hover { color: var(--c-text); }
+  .btn-save {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 24px;
+    border: none;
+    border-radius: 3px;
+    background: var(--c-text);
+    color: var(--c-bg);
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn-save:hover { opacity: 0.8; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--c-border);
+    padding: 32px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer p { font-size: 12px; color: var(--c-muted); }
+
+  /* EDIT CONTROLS (shown on hover) */
+  .project-card .edit-controls {
+    display: none;
+    gap: 6px;
+    margin-top: 14px;
+  }
+  .project-card:hover .edit-controls { display: flex; }
+  .edit-btn {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--c-muted);
+    background: transparent;
+    border: 1px solid var(--c-border);
+    border-radius: 2px;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .edit-btn:hover { color: var(--c-text); border-color: var(--c-muted); }
+  .edit-btn.danger:hover { color: #c0392b; border-color: #c0392b; }
+
+  input[type="file"] { display: none; }
+
+  @media (max-width: 700px) {
+    nav { padding: 0 20px; }
+    .hero, .filter-bar, .projects, .add-project-area, footer { padding-left: 20px; padding-right: 20px; }
+    .projects { columns: 1; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">Studio</a>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="mailto:hello@studio.kr">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero" id="work">
+  <p class="hero-label">BX Designer</p>
+  <h1>Brand <em>experience</em><br>through image.</h1>
+  <p class="hero-desc">브랜드 이미지 촬영 기획부터 온라인 콘텐츠 제작, SNS 피드 디자인까지 — 브랜드의 시각적 언어를 만듭니다.</p>
+</section>
+
+<div class="filter-bar">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="촬영기획">촬영 기획</button>
+  <button class="filter-btn" data-filter="온라인이미지">온라인 이미지</button>
+  <button class="filter-btn" data-filter="SNS">SNS 관리</button>
+  <button class="filter-btn" data-filter="브랜딩">브랜딩</button>
+</div>
+
+<div class="projects" id="projects-grid"></div>
+
+<div class="add-project-area">
+  <button class="add-project-btn" id="addProjectBtn">
+    <svg viewBox="0 0 24 24" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    새 프로젝트 추가
+  </button>
+</div>
+
+<footer id="about">
+  <p>© 2024 Studio — BX Designer</p>
+  <p>Seoul, Korea</p>
+</footer>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="projectModal">
+  <div class="modal">
+    <p class="modal-title" id="modalTitle">새 프로젝트</p>
+    <div class="form-group">
+      <label class="form-label">프로젝트명</label>
+      <input class="form-input" id="f-title" type="text" placeholder="예: Maison Blanc 브랜드 캠페인">
+    </div>
+    <div class="form-group">
+      <label class="form-label">클라이언트</label>
+      <input class="form-input" id="f-client" type="text" placeholder="예: Maison Blanc">
+    </div>
+    <div class="form-group">
+      <label class="form-label">카테고리</label>
+      <select class="form-select" id="f-category">
+        <option value="촬영기획">촬영 기획</option>
+        <option value="온라인이미지">온라인 이미지</option>
+        <option value="SNS">SNS 관리</option>
+        <option value="브랜딩">브랜딩</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">연도</label>
+      <input class="form-input" id="f-year" type="text" placeholder="2024">
+    </div>
+    <div class="form-group">
+      <label class="form-label">설명</label>
+      <textarea class="form-textarea" id="f-desc" placeholder="프로젝트에 대한 간단한 설명을 적어주세요."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="modalCancel">취소</button>
+      <button class="btn-save" id="modalSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="imageInput" accept="image/*" multiple>
+
+<script>
+const SAMPLE = [
+  {
+    id: 1,
+    title: "Maison Blanc 시즌 캠페인",
+    client: "Maison Blanc",
+    category: "촬영기획",
+    year: "2024",
+    desc: "F/W 시즌 론칭을 위한 전체 촬영 기획 및 현장 디렉팅. 무드보드 설계부터 포스트 프로덕션까지.",
+    images: []
+  },
+  {
+    id: 2,
+    title: "Oat Studio SNS 피드",
+    client: "Oat Studio",
+    category: "SNS",
+    year: "2024",
+    desc: "인스타그램 월별 피드 디자인 및 콘텐츠 제작. 브랜드 톤앤매너 일관성 유지.",
+    images: []
+  },
+  {
+    id: 3,
+    title: "Hana Cosmetics 온라인 배너",
+    client: "Hana Cosmetics",
+    category: "온라인이미지",
+    year: "2023",
+    desc: "신제품 론칭 온라인 배너 및 상세페이지 이미지 제작. 카카오, 네이버 채널 대응.",
+    images: []
+  },
+  {
+    id: 4,
+    title: "Forma 브랜드 아이덴티티",
+    client: "Forma Studio",
+    category: "브랜딩",
+    year: "2023",
+    desc: "인테리어 스튜디오 브랜드 리뉴얼. 로고 시스템부터 브랜드 이미지 방향성 정립.",
+    images: []
+  }
+];
+
+let projects = JSON.parse(localStorage.getItem('portfolio_projects') || 'null') || SAMPLE;
+let editingId = null;
+let addingImageToId = null;
+let currentFilter = 'all';
+
+function save() { localStorage.setItem('portfolio_projects', JSON.stringify(projects)); }
+
+function categoryLabel(cat) {
+  const map = { '촬영기획': '촬영 기획', '온라인이미지': '온라인 이미지', 'SNS': 'SNS 관리', '브랜딩': '브랜딩' };
+  return map[cat] || cat;
+}
+
+function renderProjects() {
+  const grid = document.getElementById('projects-grid');
+  grid.innerHTML = '';
+  projects.forEach(p => {
+    const show = currentFilter === 'all' || p.category === currentFilter;
+    const card = document.createElement('div');
+    card.className = 'project-card' + (show ? '' : ' hidden');
+    card.dataset.id = p.id;
+
+    const imgs = p.images || [];
+    let imgHtml = '';
+    const layoutClass = imgs.length === 0 ? 'single' : imgs.length === 1 ? 'single' : imgs.length === 2 ? 'double' : 'triple';
+
+    if (imgs.length === 0) {
+      imgHtml = `<div class="project-images single"><div class="img-wrap" style="aspect-ratio:16/9"><div class="img-placeholder" onclick="triggerAddImage(${p.id})"><svg viewBox="0 0 24 24" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/><circle cx="8.5" cy="8.5" r="1.5"/></svg>이미지 추가</div></div></div>`;
+    } else {
+      const showImgs = imgs.slice(0, 3);
+      const wrappers = showImgs.map((src, i) =>
+        `<div class="img-wrap${i === 0 && imgs.length >= 3 ? '' : ''}"><img src="${src}" alt="project image" loading="lazy"></div>`
+      ).join('');
+      imgHtml = `<div class="project-images ${layoutClass}">${wrappers}</div>`;
+    }
+
+    card.innerHTML = `
+      ${imgHtml}
+      <div class="project-meta">
+        <div class="project-tags">
+          <span class="tag">${categoryLabel(p.category)}</span>
+          <span class="tag">${p.year}</span>
+        </div>
+        <p class="project-title">${p.title}</p>
+        <p class="project-client">${p.client}</p>
+        <p class="project-desc">${p.desc}</p>
+        <div class="edit-controls">
+          <button class="edit-btn" onclick="triggerAddImage(${p.id})">이미지 추가</button>
+          <button class="edit-btn" onclick="editProject(${p.id})">수정</button>
+          <button class="edit-btn danger" onclick="deleteProject(${p.id})">삭제</button>
+        </div>
+      </div>`;
+
+    grid.appendChild(card);
+  });
+}
+
+function triggerAddImage(id) {
+  addingImageToId = id;
+  document.getElementById('imageInput').click();
+}
+
+document.getElementById('imageInput').addEventListener('change', function(e) {
+  const files = Array.from(e.target.files);
+  if (!files.length || addingImageToId === null) return;
+  const p = projects.find(x => x.id === addingImageToId);
+  if (!p) return;
+  let loaded = 0;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      p.images = p.images || [];
+      p.images.push(ev.target.result);
+      loaded++;
+      if (loaded === files.length) { save(); renderProjects(); }
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+  addingImageToId = null;
+});
+
+function openModal(id = null) {
+  editingId = id;
+  const modal = document.getElementById('projectModal');
+  document.getElementById('modalTitle').textContent = id ? '프로젝트 수정' : '새 프로젝트';
+  if (id) {
+    const p = projects.find(x => x.id === id);
+    document.getElementById('f-title').value = p.title;
+    document.getElementById('f-client').value = p.client;
+    document.getElementById('f-category').value = p.category;
+    document.getElementById('f-year').value = p.year;
+    document.getElementById('f-desc').value = p.desc;
+  } else {
+    document.getElementById('f-title').value = '';
+    document.getElementById('f-client').value = '';
+    document.getElementById('f-category').value = '촬영기획';
+    document.getElementById('f-year').value = new Date().getFullYear();
+    document.getElementById('f-desc').value = '';
+  }
+  modal.classList.add('open');
+}
+
+function closeModal() { document.getElementById('projectModal').classList.remove('open'); }
+
+function editProject(id) { openModal(id); }
+
+function deleteProject(id) {
+  if (!confirm('이 프로젝트를 삭제할까요?')) return;
+  projects = projects.filter(p => p.id !== id);
+  save(); renderProjects();
+}
+
+document.getElementById('addProjectBtn').addEventListener('click', () => openModal());
+document.getElementById('modalCancel').addEventListener('click', closeModal);
+document.getElementById('projectModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+
+document.getElementById('modalSave').addEventListener('click', () => {
+  const title = document.getElementById('f-title').value.trim();
+  const client = document.getElementById('f-client').value.trim();
+  if (!title || !client) { alert('프로젝트명과 클라이언트는 필수입니다.'); return; }
+  const data = {
+    title,
+    client,
+    category: document.getElementById('f-category').value,
+    year: document.getElementById('f-year').value.trim() || String(new Date().getFullYear()),
+    desc: document.getElementById('f-desc').value.trim()
+  };
+  if (editingId) {
+    const p = projects.find(x => x.id === editingId);
+    Object.assign(p, data);
+  } else {
+    projects.push({ id: Date.now(), images: [], ...data });
+  }
+  save(); renderProjects(); closeModal();
+});
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderProjects();
+  });
+});
+
+renderProjects();
+</script>
+</body>
+</html>
